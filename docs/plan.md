@@ -26,13 +26,30 @@
 The original four milestones above remain complete. The user has authorized README updates, publication to a new public `Sizwe780/TaleSafe` GitHub repository, and a full audit followed by replacements for mocked product behavior where sufficient information is available.
 
 ### Milestone 5 GitHub publication and mock audit
-- **Status:** In progress.
+- **Status:** Complete. Public repository `https://github.com/Sizwe780/TaleSafe` contains the verified 38-file source tree at commit `bc7baea3f65fa72049bc1826234e4f17c989c36b`.
 - **Tasks:** Update the README, include the product overview, publish a public source repository without credentials or local verification files, and inventory mock product behavior and external dependencies.
 - **Validation:** Verify the remote repository is public and contains the intended source/documentation commit. Document real behavior versus remaining simulations.
 - **Execution:** Complete and verify publication before implementing the next milestone. Preserve isolated test mocks and form input placeholders.
 
 ### Milestone 6 Replace supported mock behavior
-- **Status:** Pending Milestone 5.
-- **Tasks:** Replace example tracking with actual stored activity where supported. Define and implement creator review of permission requests without inventing contract terms. Replace dummy financial balances with a truthful integration state until a payment provider is selected.
+- **Status:** Implemented; 22 tests and production build pass; live browser verification shows actual registrations/enquiries and no dummy financial amounts. Final docs publication is in progress.
+- **Tasks:** Replace example tracking with actual stored activity. Replace dummy financial balances with a truthful integration state until a payment provider is selected. Record the user's expanded licensing and integration framework as follow-on milestones.
 - **External information:** Ask the user for usage-monitoring sources, licensing approval/terms requirements, payment provider, currency and payout country when needed. Do not claim live rights enforcement, usage monitoring, payment settlement or royalties without verified integrations.
 - **Validation:** Test data ownership, actual persisted activity, permitted request-state transitions and honest empty/unconfigured states; verify the UI and update docs before publishing changes.
+
+### Milestone 7 Verified licensing foundations
+- **Status:** Pending Milestone 6 publication.
+- **Tasks:** Implement creator-controlled catalog visibility, licensee verification profiles and structured non-binding term-sheet drafts using `docs/licensing-framework.md`. Gate binding requests on trusted verification and authority; preserve existing MVP enquiries as legacy records. Model community entity authority without self-verification or uploader-only approval.
+- **Validation:** Verify private stories are not exposed, required term-sheet fields and permissions are enforced, unverified users cannot submit binding requests, community stories cannot bypass authority checks, and drafts persist and render.
+- **External gate:** Trusted verification process/provider and approved contract/signature configuration are required before executing binding contracts or granting rights. Ask for these while building independent foundations.
+
+### Milestone 8 Payfast ready billing pages
+- **Status:** Pending Milestone 7 foundation checks.
+- **Tasks:** Provide actual persisted invoice/billing views and Payfast integration configuration states. Prepare server-side payment verification according to official documentation where feasible; never fabricate settlement, escrow, payouts or asset unlocks.
+- **Validation:** Empty data is honest; unconfigured checkout is blocked; signature/amount/idempotency checks are tested before any ITN is trusted; fulfillment requires verified conditions.
+- **External gate:** Merchant/sandbox credentials, callback hosting, currency/country, beneficiary routing and a supported escrow arrangement if escrow is required.
+
+### Milestone 9 Opt in monitoring foundations
+- **Status:** Pending earlier milestone checks.
+- **Tasks:** Implement creator-authorized scan jobs and reviewable findings, starting with Copyscape and SerpApi adapters verified against official documentation. Keep unavailable providers explicit and server-side secrets private.
+- **Validation:** Ownership/consent gates, bounded requests, provider response parsing, retry/error states and findings persistence; live checks require credentials. No finding automatically asserts infringement or AI-model training.

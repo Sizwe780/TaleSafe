@@ -6,6 +6,7 @@ import { randomBytes, createHash } from 'node:crypto';
 import { z } from 'zod';
 import { createStoriesRouter } from './stories.js';
 import { createLicensesRouter } from './licenses.js';
+import { createActivityRouter } from './activity.js';
 
 const scopes = ['openid', 'profile', 'email'];
 const saveSession = req => new Promise((resolve, reject) => req.session.save(error => error ? reject(error) : resolve()));
@@ -101,6 +102,7 @@ export function createApp({ config, prisma, identity, sessionStore, storage, log
   });
   app.use('/api/stories', createStoriesRouter({ config, prisma, storage, logger }));
   app.use('/api/stories', createLicensesRouter({ config, prisma }));
+  app.use('/api/activity', createActivityRouter({ prisma }));
   app.use((_req, res) => res.status(404).json({ error: 'Route not found' }));
   app.use((error, _req, res, _next) => {
     if (error.name === 'MulterError') {

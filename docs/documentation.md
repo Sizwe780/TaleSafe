@@ -2,7 +2,7 @@
 
 ## Completion State
 
-**All four milestones are implemented and verified (2026-11-11).** Each milestone passed its acceptance gate before the next one began. The goal is complete; no implementation or validation gates remain open.
+**The original four MVP milestones are implemented and verified (2026-11-11).** Each milestone passed its acceptance gate before the next one began. Follow-on publication and implementation requested afterward are tracked below and in the extended plan.
 
 | Milestone | Final evidence |
 | --- | --- |
@@ -75,7 +75,7 @@ npm run start --workspace server
 npm run start --workspace client
 ```
 
-Open `http://localhost:3000`. The final production preview is running there (client process session 22735); the final API runs on 3001 (session 84337, PID 9036). Check live handles/ports before restarting them. The browser deliverable tab shows the completed authenticated workspace.
+Open `http://localhost:3000`. The latest production preview is running there (client process session 83911); the latest API runs on 3001 (session 4671, PID 36056). Check live handles/ports before restarting them. The browser shows the authenticated workspace with actual activity and an explicit unconnected payment state.
 
 The two live verifier commands above remain available. Registration verification creates another acceptance story, so run it only when a new live upload check is needed. License verification is read-only and requires an existing Educational REQUESTED record.
 
@@ -91,6 +91,11 @@ Created docs/TaleSafe Africa Overview.docx at the user's request. The two-page d
 - README now explains the product, working versus simulated features, setup variables, commands, API contracts and the product overview document.
 - User selected a new **public** `Sizwe780/TaleSafe` repository. Connected GitHub profile confirms the account. The repository has been created and its public visibility verified.
 - Initialized local Git on main with the account's GitHub noreply commit email. Credentials, verification files, generated outputs, dependencies and Word lock files are excluded.
-- The GitHub connector supports source upload but has no repository-creation action. The user completed browser sign-in. The repository was created through the browser and is accessible through the connector with push permission; source upload is being prepared.
+- The GitHub connector supports source upload but has no repository-creation action. The user completed browser sign-in. The public repository was created through the browser, then all 38 scanned source/documentation files were uploaded through the connector. Main commit: `bc7baea3f65fa72049bc1826234e4f17c989c36b`; tree: `9b88e4fcc0644e9e1dc6e174aa92b79ae3ac2099`. Remote ref and complete tree were verified. No credentials, cookie files, Word lock files, dependencies or build outputs were included.
 - `docs/mock-audit.md` inventories product simulations, preserved test mocks/input hints and the external information needed for real replacements.
-- Follow `docs/plan.md` Milestone 5 before implementing Milestone 6. Original MVP milestones remain complete.
+- Milestone 5 is complete. Local main tracks origin/main at the published commit, with identical tree verified. Initial local commits are preserved on `mvp-local-snapshot`.
+- Milestone 6 begins with real registration/license activity and an explicit unconnected payment state. User was asked for licensing grant policy, payment provider/currency/country and external monitoring sources. Do not implement those dependent integrations without the required answers.
+- Milestone 6's supported changes are now implemented and verified: `GET /api/activity` reads owner-scoped registrations and owner/requester-scoped enquiries, validates bounded limits and returns real records in time order. The UI refreshes this activity after mutations. Removed static anthology/film examples and dummy monetary amounts.
+- 22 backend tests pass, including ownership, chronology, result bounds and honest empty/error activity responses. Production build and TypeScript pass. The live browser showed actual registrations/enquiries and Payments not connected; it asserted no external monitoring or financial balance.
+- The original Word overview is open in Word and could not be overwritten. Preserved it and created `docs/TaleSafe Africa Overview Updated.docx` reflecting the replacements; both pages were rendered and visually checked.
+- User supplied the detailed future licensing/community/contract/payment framework now preserved in `docs/licensing-framework.md`; selected Payfast-ready pages without an existing merchant account and Copyscape/SerpApi as initial monitoring targets. Additional provider/contract/authority questions are pending. New milestones 7–9 cover these foundations and their external gates.

@@ -4,11 +4,11 @@ TaleSafe Africa helps African storytellers register their work, record commercia
 
 Creators upload a text or PDF story, choose its permissions, and receive a SHA-256 fingerprint calculated from the original bytes before private Azure storage. The dashboard brings registration details, consent and licensing request status together.
 
-[Read the product overview](docs/TaleSafe%20Africa%20Overview.docx).
+[Read the current product overview](docs/TaleSafe%20Africa%20Overview%20Updated.docx). The [initial MVP overview](docs/TaleSafe%20Africa%20Overview.docx) is retained for reference.
 
 ## Current capabilities
 
-The initial four implementation milestones are complete. The MVP has been verified with real Microsoft Entra sign-in, PostgreSQL persistence, a curl upload to Azure, and a licensing request submitted through the browser. The production build and 19 backend tests pass.
+The initial four implementation milestones are complete. The MVP has been verified with real Microsoft Entra sign-in, PostgreSQL persistence, a curl upload to Azure, and a licensing request submitted through the browser. The first follow-on changes replace sample tracking events and dummy money balances. The production build and 22 backend tests pass.
 
 | Area | Current behavior |
 | --- | --- |
@@ -17,8 +17,8 @@ The initial four implementation milestones are complete. The MVP has been verifi
 | Consent registry | Explicit commercial use, AI training and cultural heritage selections |
 | Creator dashboard | Owner-filtered story list, registration timestamps, fingerprints and consent flags |
 | Licensing | Persisted pending enquiries for Educational, Film and AI company tiers, with consent checks |
-| Story tracking | Labelled example data; external usage is not monitored |
-| Revenue | Placeholder balances; no payment collection, royalties or payouts |
+| Story activity | Actual registrations and licensing enquiries from PostgreSQL; external usage is not monitored |
+| Revenue | Explicit payments-not-connected state; no fabricated balances, collection or payouts |
 
 Licensing enquiries currently demonstrate the request workflow. They grant no rights and process no payment. A fingerprint supports file integrity comparisons; it does not establish authorship or prevent copying outside TaleSafe.
 
@@ -121,9 +121,11 @@ The verifier also accepts a file containing browser-copied request headers from 
 
 ## Creator dashboard (Milestone 3)
 
-After sign-in, the home page becomes the creator workspace. Register stories with explicit permissions, inspect original timestamps and SHA-256 fingerprints, and see AI consent and the latest mock licensing request. Story Tracking uses labelled example data; Revenue is a placeholder with no payment integration.
+After sign-in, the home page becomes the creator workspace. Register stories with explicit permissions, inspect original timestamps and SHA-256 fingerprints, and see AI consent and the latest mock licensing request. Story activity shows real recorded events; Revenue explicitly reports that payments are not connected.
 
 `GET /api/stories?limit=20&offset=0` returns `{ stories, total, hasMore }` for the signed-in creator only. Limit is 1–50; offset is a nonnegative integer. Unknown parameters are rejected. Story cards include the latest related license request; no private file URLs are exposed.
+
+`GET /api/activity?limit=10` returns `{ events, hasMore }` with the most recent registrations and licensing enquiries, merged in time order. Limit is 1–50. Registration events are restricted to the creator; request events are visible only to the story owner or the requester. These are internal platform events, not evidence of external copying or AI training.
 
 ## Smart licensing (Milestone 4)
 
@@ -156,3 +158,5 @@ Never commit `.env` files, storage keys, browser cookies, the local secrets text
 ## Replacing the remaining demo behavior
 
 The follow-on audit and implementation sequence is recorded in [the plan](docs/plan.md). Replacements should use real stored events and verified integrations. Usage detection needs an agreed monitoring source; payments need a provider, currency and payout requirements; granting licenses needs defined creator approvals and terms. Renaming demo data does not make those integrations live.
+
+The user-supplied [licensing framework](docs/licensing-framework.md) defines the next phase: verified licensees, structured term sheets, community authority, signed contracts and payment-gated delivery. These requirements are not yet implemented as binding transactions. Payfast-ready billing and opt-in Copyscape/SerpApi monitoring are planned; external credentials, approved contracts and verification/signing arrangements must be supplied before their dependent actions can go live.

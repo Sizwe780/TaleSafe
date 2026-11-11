@@ -4,7 +4,7 @@ Audit date: 2026-11-11. The original MVP scope is complete. This audit covers th
 
 ## Product behavior
 
-| Location | Current behavior | Replacement and required evidence |
+| Location | Behavior identified in the initial audit | Replacement and required evidence |
 | --- | --- | --- |
 | `client/app/dashboard.tsx` Story tracking | Two hard-coded examples about an anthology and film enquiry | Replace with actual registrations and license activity from PostgreSQL. Label these as activity, not external detection. Real external usage monitoring needs a source/provider and matching policy. |
 | `client/app/dashboard.tsx` Revenue dashboard | Fixed R 0.00 balances and pending payout text | Remove illustrative amounts in favor of an explicit unconnected state. Real earnings, refunds and payouts require a payment provider, account configuration, currency, payout countries and verified transaction/webhook records. |
@@ -34,3 +34,10 @@ Audit date: 2026-11-11. The original MVP scope is complete. This audit covers th
 - Payments: provider or existing merchant account, currency, countries, payout model, refunds and webhook verification configuration. No credentials belong in chat or Git.
 
 The remaining product mock behavior is concentrated in the dashboard and licensing API. A global text replacement would misrepresent functionality and damage legitimate test fixtures; changes must follow the implementation sequence above.
+
+## Verified first replacements
+
+- Added owner-scoped `GET /api/activity` backed by actual Story and License records. The browser displays real registration and enquiry titles/timestamps/statuses; no invented examples remain in that panel.
+- Removed all illustrative R 0.00 amounts and payout promises. Revenue now explicitly states that payments are not connected and no balances are being reported.
+- 22 server tests and the production build pass. Live browser verification showed two actual registrations and their related pending enquiries from PostgreSQL, plus the honest payment state.
+- Licensing remains labelled mock until the verified-licensee and contract framework in `docs/licensing-framework.md` is implemented. The user selected Payfast as an initial integration target but has no merchant account yet; monitoring should begin with Copyscape and SerpApi.

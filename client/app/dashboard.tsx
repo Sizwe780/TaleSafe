@@ -5,6 +5,7 @@ import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 type Tier = 'EDUCATIONAL' | 'FILM' | 'AI_COMPANY';
 type License = { id: string; tier: Tier; status: 'REQUESTED' | 'APPROVED' | 'REJECTED'; createdAt: string };
+type Activity = { id: string; type: 'STORY_REGISTERED' | 'LICENSE_REQUESTED'; storyId: string; storyTitle: string; occurredAt: string; tier?: Tier; status?: License['status'] };
 export type Story = { id: string; title: string; originalName: string; contentType: string; byteSize: number; sha256: string; aiConsent: 'NOT_ALLOWED' | 'ALLOWED' | 'COMPENSATION_REQUIRED'; commercialUse: boolean; culturalHeritage: boolean; createdAt: string; licenses: License[] };
 const tierNames = { EDUCATIONAL: 'Educational', FILM: 'Film', AI_COMPANY: 'AI company' };
 const licenseStatus = { REQUESTED: 'Request pending', APPROVED: 'Approved', REJECTED: 'Rejected' };
@@ -23,6 +24,22 @@ export default function Dashboard({ displayName, onLogout }: { displayName: stri
   const [licenseStoryId, setLicenseStoryId] = useState('');
   const [licenseTier, setLicenseTier] = useState<Tier>('EDUCATIONAL');
   const [licensing, setLicensing] = useState(false);
+  const [activity, setActivity] = useState<Activity[]>([]);
+  const [activityLoading, setActivityLoading] = useState(true);
+  const [activityError, setActivityError] = useState('');
+  const [moreActivity, setMoreActivity] = useState(false);
+  const latestActivity = useRef(0);
+  const loadActivity = useCallback(async () => {
+    const sequence = ++latestActivity.current;
+    setActivityLoading(true); setActivityError('');
+    try {
+      const response = await fetch(`${api}/api/activity?limit=10`, { credentials: 'include', cache: 'no-store' });
+      if (!response.ok) throw new Error('Unable to load your activity. Please retry.');
+      const data = await response.json();
+      if (sequence === latestActivity.current) { setActivity(data.events); setMoreActivity(data.hasMore); }
+    } catch (e) { if (sequence === latestActivity.current) setActivityError(e instanceof Error ? e.message : 'Unable to load activity.'); }
+    finally { if (sequence === latestActivity.current) setActivityLoading(false); }
+  }, []);
   const selectedStory = stories.find(story => story.id === licenseStoryId);
   const latestRequest = useRef(0);
   const load = useCallback(async (offset = 0) => {
@@ -38,7 +55,7 @@ export default function Dashboard({ displayName, onLogout }: { displayName: stri
     } catch (e) { if (sequence === latestRequest.current) setError(e instanceof Error ? e.message : 'Unable to load stories.'); }
     finally { if (sequence === latestRequest.current) setLoading(false); }
   }, []);
-  useEffect(() => { void load(); return () => { latestRequest.current++; }; }, [load]);
+  useEffect(() => { void load(); void loadActivity(); return () => { latestRequest.current++; latestActivity.current++; }; }, [load, loadActivity]);
 
   async function upload(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -49,7 +66,7 @@ export default function Dashboard({ displayName, onLogout }: { displayName: stri
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Registration failed. Please retry.');
       form.reset(); setRegister(false); setNotice('Your story is registered. Its digital fingerprint and permissions are saved.');
-      await load();
+      await Promise.all([load(), loadActivity()]);
     } catch (e) { setError(e instanceof Error ? e.message : 'Unable to register your story.'); }
     finally { setBusy(false); }
   }
@@ -63,7 +80,7 @@ export default function Dashboard({ displayName, onLogout }: { displayName: stri
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Unable to submit the request.');
       setNotice(`${tierNames[data.tier as Tier]} mock request recorded. No rights granted or payment processed.`);
-      await load();
+      await Promise.all([load(), loadActivity()]);
     } catch (e) { setError(e instanceof Error ? e.message : 'Unable to submit the request.'); }
     finally { setLicensing(false); }
   }
@@ -72,7 +89,7 @@ export default function Dashboard({ displayName, onLogout }: { displayName: stri
     <aside className="flex flex-col gap-8 bg-[#19382c] px-6 py-7 text-[#f5f2e9] lg:sticky lg:top-0 lg:h-screen lg:px-8">
       <a href="/" className="text-2xl font-bold tracking-tight">TaleSafe<span className="mt-1 block text-[10px] font-normal tracking-[0.4em] text-white/60">AFRICA</span></a>
       <nav aria-label="Creator navigation" className="flex gap-5 text-sm lg:flex-col">
-        <a href="#stories" className="font-semibold">My stories</a><a href="#licensing" className="text-white/70">Smart licensing</a><a href="#tracking" className="text-white/70">Story tracking</a><a href="#revenue" className="text-white/70">Revenue</a>
+        <a href="#stories" className="font-semibold">My stories</a><a href="#licensing" className="text-white/70">Smart licensing</a><a href="#tracking" className="text-white/70">Story activity</a><a href="#revenue" className="text-white/70">Revenue</a>
       </nav>
       <div className="hidden flex-1 lg:block"/>
       <p className="hidden font-serif text-2xl leading-snug text-white/70 lg:block">Every voice<br/>leaves a legacy.</p>
@@ -126,8 +143,11 @@ export default function Dashboard({ displayName, onLogout }: { displayName: stri
         {hasMore && <p className="mt-4 text-xs text-green-950/60">Load more stories above to select older registrations.</p>}
       </section>
       <div className="mt-10 grid gap-6 xl:grid-cols-2">
-        <section id="tracking" className="panel scroll-mt-6"><div className="flex items-center justify-between gap-3"><h2 className="text-xl font-semibold">Story tracking</h2><span className="demo-label">DEMO DATA</span></div><p className="mt-3 text-sm leading-relaxed text-green-950/60">A preview of future usage insights. These examples are illustrative and are not detections of your work.</p><ul className="mt-6 space-y-5 text-sm"><li className="flex justify-between gap-4 border-b border-green-950/10 pb-4"><span>Educational anthology · example use</span><span className="text-green-800">Attributed</span></li><li className="flex justify-between gap-4"><span>Film adaptation · example enquiry</span><span className="text-[#ad5b28]">Under review</span></li></ul></section>
-        <section id="revenue" className="panel scroll-mt-6"><div className="flex items-center justify-between"><h2 className="text-xl font-semibold">Revenue dashboard</h2><span className="demo-label">PLACEHOLDER</span></div><p className="mt-5 text-4xl font-semibold tracking-tight">R 0.00</p><p className="mt-2 text-xs uppercase tracking-widest text-green-950/50">Illustrative balance · no payments processed</p><div className="mt-6 grid grid-cols-2 gap-4 border-t border-green-950/10 pt-4 text-sm"><div><p className="text-green-950/55">This month</p><p className="mt-1 font-semibold">R 0.00</p></div><div><p className="text-green-950/55">Pending payouts</p><p className="mt-1 font-semibold">Coming later</p></div></div></section>
+        <section id="tracking" className="panel scroll-mt-6"><div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-semibold">Story activity</h2><button onClick={() => void loadActivity()} disabled={activityLoading} className="text-xs underline underline-offset-4 disabled:opacity-40">Refresh activity</button></div><p className="mt-3 text-sm leading-relaxed text-green-950/60">Registrations and enquiries recorded in TaleSafe. External websites are not being monitored.</p>
+          {activityLoading ? <p role="status" className="mt-6 text-sm">Loading recorded activity…</p> : activityError ? <p role="alert" className="mt-6 text-sm text-red-800">{activityError}</p> : activity.length ? <ul className="mt-6 space-y-5 text-sm">{activity.map(event => <li key={event.id} className="border-b border-green-950/10 pb-4 last:border-0 last:pb-0"><p className="font-semibold">{event.type === 'STORY_REGISTERED' ? 'Story registered' : `${event.tier ? tierNames[event.tier] : 'License'} enquiry recorded`}</p><p className="mt-1 text-green-950/65">{event.storyTitle}</p><p className="mt-2 text-xs text-green-950/50"><time dateTime={event.occurredAt}>{date(event.occurredAt)} SAST</time>{event.status && ` · ${licenseStatus[event.status]}`}</p></li>)}</ul> : <p className="mt-6 text-sm text-green-950/60">No recorded activity yet. Register a story to begin.</p>}
+          {moreActivity && <p className="mt-4 text-xs text-green-950/50">Showing the 10 most recent events.</p>}
+        </section>
+        <section id="revenue" className="panel scroll-mt-6"><h2 className="text-xl font-semibold">Revenue dashboard</h2><p className="mt-6 text-2xl font-semibold tracking-tight">Payments not connected</p><p className="mt-3 text-sm leading-relaxed text-green-950/60">Earnings and payout data are unavailable until a payment provider is connected and verified transactions are recorded.</p><p className="mt-6 border-t border-green-950/10 pt-4 text-sm text-green-950/60">License enquiries do not collect money. No balance, royalties or payouts are reported here.</p></section>
       </div>
       <footer className="mt-10 border-t border-green-950/15 pt-5 text-xs text-green-950/50">TaleSafe Africa · Preserving voices. Building possibilities.</footer>
     </main>
