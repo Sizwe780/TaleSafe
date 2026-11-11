@@ -45,7 +45,7 @@ export function createStoriesRouter({ config, prisma, storage, logger = console 
     const where = { ownerId: req.session.userId };
     const [stories, total] = await Promise.all([
       prisma.story.findMany({ where, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], skip: offset, take: limit,
-        select: { id: true, title: true, originalName: true, contentType: true, byteSize: true, sha256: true, aiConsent: true, commercialUse: true, culturalHeritage: true, createdAt: true,
+        select: { id: true, title: true, originalName: true, contentType: true, byteSize: true, sha256: true, aiConsent: true, commercialUse: true, culturalHeritage: true, createdAt: true, published: true, communityEntityId: true,
           licenses: { take: 1, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], select: { id: true, tier: true, status: true, createdAt: true } } } }),
       prisma.story.count({ where }),
     ]);

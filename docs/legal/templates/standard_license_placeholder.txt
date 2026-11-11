@@ -1,0 +1,20 @@
+NON-BINDING LICENSE PREVIEW
+
+This file is an unapproved development placeholder. It is not a contract, signature, grant of rights, invoice, or evidence of payment. Do not use it for execution or asset delivery.
+
+Intended jurisdiction: Republic of South Africa
+
+Story: {{storyTitle}}
+Requested scope: {{scope}}
+Term: {{duration}}
+Territory: {{territory}}
+Exclusivity: {{exclusivity}}
+Financial proposal: {{financialTerms}}
+Community authority: {{communityAuthority}}
+
+Approved contract text is still to be supplied.
+The external signing provider is still to be selected and configured.
+Identity, organization and community authority checks must be completed through trusted processes.
+The uploaded asset's SHA-256 fingerprint is not a person's signature.
+
+No rights are granted by saving, viewing or generating this preview.

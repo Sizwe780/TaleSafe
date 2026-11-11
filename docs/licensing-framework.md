@@ -50,3 +50,13 @@ The user supplied the following product requirements after the original MVP. The
 ## Open external requirements
 
 Verification provider/process, authorized operator accounts, contract template and jurisdiction, signing provider, verified community entities/administrators, Payfast merchant/sandbox configuration, payment and payout country/currency confirmation, and Copyscape/SerpApi credentials remain to be supplied or agreed. Build independent foundations while these are pending and keep dependent actions unavailable.
+
+## Additional user decisions
+
+- Verification candidates are VerifyNow and Didit. The requested individual flow is South African ID/name plus live selfie, with identity/face checks against an authorized DHA source where actually supported by the selected provider and workflow. Do not assume every candidate or workflow provides direct DHA access.
+- Organization review must establish CIPC registration/status and active directors, then verify that the acting person's identity matches an authorized director. User-entered registration/contact data alone cannot confer verified status.
+- Community entities may be NPCs, NPOs or trusts. Identity/entity checks must be followed by a human Trust and Safety mandate review of an uploaded signed resolution, letter of authority or trust deed. Do not activate community authority from uploader self-approval.
+- Governing jurisdiction is the Republic of South Africa.
+- Approved contract boilerplate is still to be drafted. The user explicitly requested `docs/legal/templates/standard_license_placeholder.txt` for preview generation; it must remain visibly non-binding and must not be substituted for an approved contract.
+- Signing provider candidates are SigniFlow or DocuSign; no provider is selected. The user permits a mock signing API for development. Such a mock must never produce a signed/legally executed state, unlock assets or collect money. The story SHA-256 hash is not a human signature.
+- Copyscape/SerpApi keys are still being obtained; ask again when their integration is ready for live testing. Do not repeatedly request them before independent implementation is ready.

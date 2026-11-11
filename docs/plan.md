@@ -32,13 +32,13 @@ The original four milestones above remain complete. The user has authorized READ
 - **Execution:** Complete and verify publication before implementing the next milestone. Preserve isolated test mocks and form input placeholders.
 
 ### Milestone 6 Replace supported mock behavior
-- **Status:** Implemented; 22 tests and production build pass; live browser verification shows actual registrations/enquiries and no dummy financial amounts. Final docs publication is in progress.
+- **Status:** Complete and published at `9062034608ce0e4c7b52e0459600542a0c742b16`. 22 tests, production build and live browser checks pass; activity is real and dummy financial amounts are removed.
 - **Tasks:** Replace example tracking with actual stored activity. Replace dummy financial balances with a truthful integration state until a payment provider is selected. Record the user's expanded licensing and integration framework as follow-on milestones.
 - **External information:** Ask the user for usage-monitoring sources, licensing approval/terms requirements, payment provider, currency and payout country when needed. Do not claim live rights enforcement, usage monitoring, payment settlement or royalties without verified integrations.
 - **Validation:** Test data ownership, actual persisted activity, permitted request-state transitions and honest empty/unconfigured states; verify the UI and update docs before publishing changes.
 
 ### Milestone 7 Verified licensing foundations
-- **Status:** Pending Milestone 6 publication.
+- **Status:** Foundations complete and verified: 28 backend tests, client build, persisted live draft and unsigned preview checks pass. Shared workspace alignment verified. Provider credentials and approved contract/signing configuration remain external gates.
 - **Tasks:** Implement creator-controlled catalog visibility, licensee verification profiles and structured non-binding term-sheet drafts using `docs/licensing-framework.md`. Gate binding requests on trusted verification and authority; preserve existing MVP enquiries as legacy records. Model community entity authority without self-verification or uploader-only approval.
 - **Validation:** Verify private stories are not exposed, required term-sheet fields and permissions are enforced, unverified users cannot submit binding requests, community stories cannot bypass authority checks, and drafts persist and render.
 - **External gate:** Trusted verification process/provider and approved contract/signature configuration are required before executing binding contracts or granting rights. Ask for these while building independent foundations.

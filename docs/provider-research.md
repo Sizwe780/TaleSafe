@@ -23,3 +23,9 @@ Checked against primary documentation on 2026-11-11. These notes guide later int
 ## Still requiring verification or external input
 
 Trusted identity/business/community verification, the approved contract and signing workflow, any legally supported escrow arrangement, exact Copyscape account API configuration, Spawning's applicable text capabilities, and authorized access to proposed publishing/audio/video sources. No scraping of restricted content or bypass of paywalls is authorized by a provider suggestion.
+
+## Identity provider checks
+
+- [VerifyNow documentation](https://www.verifynow.co.za/documentation) lists South African identity/photo, CIPC company/director and face-match services. Account credentials and the applicable verification process are still needed before these can confer trusted status.
+- [Didit developer documentation](https://didit.me/developers/) currently describes verification-session creation under `/v3/session/`, hosted verification URLs and signed webhook results. Do not build against older example versions or equate a generic workflow result with verified DHA/CIPC/director checks that were not configured and established.
+- The user requested hybrid community verification, including human mandate review. No current self-service profile or application endpoint may set verification/authority flags.

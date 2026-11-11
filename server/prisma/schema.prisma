@@ -25,6 +25,13 @@ enum LicenseStatus {
   REJECTED
 }
 
+enum VerificationState {
+  UNVERIFIED
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
 model User {
   id          String    @id @default(uuid())
   entraId     String    @unique
@@ -33,6 +40,10 @@ model User {
   createdAt   DateTime  @default(now())
   stories     Story[]
   licenses    License[]
+  licenseeProfile LicenseeProfile?
+  licenseDrafts LicenseDraft[]
+  communityApplications CommunityEntity[]
+  communityMemberships CommunityAdmin[]
 }
 
 model Story {
@@ -50,9 +61,78 @@ model Story {
   culturalHeritage Boolean  @default(false)
   createdAt       DateTime  @default(now())
   licenses        License[]
+  published       Boolean   @default(false)
+  communityEntityId String?
+  communityEntity CommunityEntity? @relation(fields: [communityEntityId], references: [id], onDelete: Restrict)
+  licenseDrafts LicenseDraft[]
 
   @@index([ownerId, createdAt])
   @@index([sha256])
+  @@index([published, createdAt])
+}
+
+model LicenseeProfile {
+  id String @id @default(uuid())
+  userId String @unique
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  kind String
+  legalName String
+  contactName String
+  contactEmail String
+  businessDomain String?
+  registrationNumber String?
+  verificationState VerificationState @default(UNVERIFIED)
+  identityVerified Boolean @default(false)
+  businessVerified Boolean @default(false)
+  directorMatchVerified Boolean @default(false)
+  educationNgoVerified Boolean @default(false)
+  providerReference String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LicenseDraft {
+  id String @id @default(uuid())
+  requesterId String
+  requester User @relation(fields: [requesterId], references: [id], onDelete: Restrict)
+  storyId String
+  story Story @relation(fields: [storyId], references: [id], onDelete: Restrict)
+  terms Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([requesterId, updatedAt])
+}
+
+model CommunityEntity {
+  id String @id @default(uuid())
+  applicantId String
+  applicant User @relation(fields: [applicantId], references: [id], onDelete: Restrict)
+  name String
+  kind String
+  registrationNumber String
+  verificationState VerificationState @default(UNVERIFIED)
+  entityVerified Boolean @default(false)
+  mandateApproved Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  admins CommunityAdmin[]
+  stories Story[]
+
+  @@index([applicantId])
+}
+
+model CommunityAdmin {
+  id String @id @default(uuid())
+  entityId String
+  entity CommunityEntity @relation(fields: [entityId], references: [id], onDelete: Restrict)
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  verificationState VerificationState @default(UNVERIFIED)
+  mandateBlobName String?
+  reviewedAt DateTime?
+
+  @@unique([entityId, userId])
 }
 
 model License {

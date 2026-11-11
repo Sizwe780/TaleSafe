@@ -1,44 +1,53 @@
+[Watch the TaleSafe showcase on Loom](https://www.loom.com/share/a7d6a417eeff4c0783b446f113810293)
+
 # TaleSafe Africa
 
-TaleSafe Africa helps African storytellers register their work, record commercial and AI training permissions, and manage licensing enquiries from a creator workspace.
+TaleSafe Africa is a creator rights workspace for African storytellers. It connects story registration, digital fingerprints and explicit usage permissions with a structured licensing process.
 
-Creators upload a text or PDF story, choose its permissions, and receive a SHA-256 fingerprint calculated from the original bytes before private Azure storage. The dashboard brings registration details, consent and licensing request status together.
+Creators upload a text or PDF story, choose commercial and AI permissions, and manage the record from their dashboard. Files stay in private Azure storage. Creators decide whether a story's title and permissions appear in the public catalog.
 
-[Read the current product overview](docs/TaleSafe%20Africa%20Overview%20Updated.docx). The [initial MVP overview](docs/TaleSafe%20Africa%20Overview.docx) is retained for reference.
+## Features
 
-## Current capabilities
+- **Story registration:** Text and PDF uploads up to 10 MiB, with a SHA-256 fingerprint calculated from the original bytes before storage.
+- **Consent and permissions:** Explicit commercial use, AI training and cultural heritage selections.
+- **Creator workspace:** Registered stories, timestamps, fingerprints, catalog visibility and actual registration/enquiry activity.
+- **Public catalog:** Creator-published titles and permissions, with original files kept private.
+- **Licensing workspace:** Licensee profiles, structured non-binding term-sheet drafts and community entity applications.
+- **Authority safeguards:** User-entered details do not verify a person, business or community mandate. Binding submission and asset delivery remain blocked until trusted checks and approved contract/signing arrangements are connected.
 
-The initial four implementation milestones are complete. The MVP has been verified with real Microsoft Entra sign-in, PostgreSQL persistence, a curl upload to Azure, and a licensing request submitted through the browser. The first follow-on changes replace sample tracking events and dummy money balances. The production build and 22 backend tests pass.
+A digital fingerprint supports file integrity comparisons. It does not establish authorship, prevent copying outside the platform or act as a person's legal signature.
 
-| Area | Current behavior |
+## Licensing and community protection
+
+A term sheet records the proposed scope, duration, territory, exclusivity, commercial intent and financial terms. Supported scopes include print, digital publication, audio, film/TV, classroom education, AI model training and AI RAG indexing. Proposals can specify a flat fee, royalties or eligible pro-bono use.
+
+Drafts are unsigned and non-binding. Cultural heritage stories require verified community authority and human mandate review before any binding workflow can proceed. The development preview uses an explicitly unapproved placeholder and never grants rights, collects money or unlocks an asset. Historical MVP enquiries remain identifiable as legacy records; new mock-enquiry submissions are retired.
+
+External identity verification, approved contracts, signing, payments and monitoring require their respective providers and configuration. The revenue view reports an unconnected payment state instead of invented balances. Story activity describes events within TaleSafe, not external copying or proof of AI training.
+
+## Technology
+
+| Layer | Technology |
 | --- | --- |
-| Authentication | Microsoft Entra ID, PKCE and PostgreSQL-backed sessions |
-| Story registration | Private text/PDF uploads up to 10 MiB, SHA-256 fingerprints and ownership records |
-| Consent registry | Explicit commercial use, AI training and cultural heritage selections |
-| Creator dashboard | Owner-filtered story list, registration timestamps, fingerprints and consent flags |
-| Licensing | Persisted pending enquiries for Educational, Film and AI company tiers, with consent checks |
-| Story activity | Actual registrations and licensing enquiries from PostgreSQL; external usage is not monitored |
-| Revenue | Explicit payments-not-connected state; no fabricated balances, collection or payouts |
+| Client | Next.js, React, TypeScript and Tailwind CSS |
+| API | Node.js and Express |
+| Database | PostgreSQL with Prisma and the pg adapter |
+| Authentication | Microsoft Entra ID with PKCE and persistent server sessions |
+| File storage | Private Azure Blob Storage |
+| File integrity | SHA-256 |
 
-Licensing enquiries currently demonstrate the request workflow. They grant no rights and process no payment. A fingerprint supports file integrity comparisons; it does not establish authorship or prevent copying outside TaleSafe.
+## Getting started
 
-## Project structure
-
-```text
-client/    Next.js and Tailwind creator interface
-server/    Express API, Prisma schema, migrations and tests
-docs/      Product overview, implementation plan and verification record
-```
-
-The authoritative execution state and milestone evidence live in [docs/documentation.md](docs/documentation.md). Follow [docs/implement.md](docs/implement.md) and complete each validation gate in [docs/plan.md](docs/plan.md) before proceeding.
-
-## Prerequisites
+### Prerequisites
 
 - Node.js 22.12 or later and npm.
-- A PostgreSQL database with permission to create the application tables.
-- A single-tenant Microsoft Entra app registration configured as a **Web** application, with `http://localhost:3001/auth/callback` registered as its redirect URI, plus a client secret value.
+- A PostgreSQL database with permission to apply the application migrations.
+- A single-tenant Microsoft Entra Web app registration.
+- An Azure Storage account and a private container for story files.
 
-## Setup (PowerShell)
+Register `http://localhost:3001/auth/callback` as a **Web** redirect URI in Entra.
+
+### Install and configure
 
 ```powershell
 npm install
@@ -46,103 +55,80 @@ Copy-Item server/.env.example server/.env
 Copy-Item client/.env.example client/.env.local
 ```
 
-For an existing installation, preserve populated environment files rather than copying the examples over them.
+Copy environment examples only for a fresh installation. Preserve populated configuration when working with an existing checkout.
 
-Edit `server/.env` with real credentials and a randomly generated session secret of at least 32 characters. Keep these files private. Database migrations and the API use the same `DATABASE_URL`. This project never provides a development authentication bypass.
-
-| Server setting | Purpose |
+| Server variable | Purpose |
 | --- | --- |
 | `DATABASE_URL` | PostgreSQL connection string |
 | `SESSION_SECRET` | At least 32 random characters for session signing |
 | `ENTRA_TENANT_ID` | Microsoft Entra directory ID |
 | `ENTRA_CLIENT_ID` | Registered application ID |
 | `ENTRA_CLIENT_SECRET` | Application secret value |
-| `ENTRA_REDIRECT_URI` | Web callback, locally `http://localhost:3001/auth/callback` |
-| `CLIENT_ORIGIN` | Client origin, locally `http://localhost:3000` |
-| `AZURE_STORAGE_CONNECTION_STRING` | Azure Storage credential; keep it on the server |
-| `AZURE_STORAGE_CONTAINER` | An existing private story container |
+| `ENTRA_REDIRECT_URI` | Callback URI; locally `http://localhost:3001/auth/callback` |
+| `CLIENT_ORIGIN` | Allowed client origin; locally `http://localhost:3000` |
+| `AZURE_STORAGE_CONNECTION_STRING` | Server-side Azure Storage credential |
+| `AZURE_STORAGE_CONTAINER` | Existing private container name |
 
-The client uses `NEXT_PUBLIC_API_URL`, locally `http://localhost:3001`. This is an API address, never a secret. Register the exact callback URI as a **Web** redirect in Entra.
+Set `NEXT_PUBLIC_API_URL=http://localhost:3001` in the client environment. Only the API address belongs in this public client setting; never put credentials there.
+
+### Prepare the database
 
 ```powershell
 npm run db:generate
 npm run db:validate
 npm run db:migrate
 npm run db:check
-npm run dev:server
 ```
 
-In another terminal:
+Use versioned migrations rather than `db push`. The session table is migration-managed alongside the application tables.
+
+### Run locally
+
+Start each service in a separate terminal:
+
+```powershell
+npm run dev:server
+```
 
 ```powershell
 npm run dev:client
 ```
 
-The client runs at `http://localhost:3000`; the API runs at `http://localhost:3001`. The server validates configuration and connects to PostgreSQL before listening. Successful startup logs `PostgreSQL connection successful`.
+Open [TaleSafe](http://localhost:3000). The API listens on port 3001. The server checks configuration and database connectivity before listening. Story uploads return 503 if Azure storage is not configured.
 
-## Milestone 1 verification
+## Pages
 
-```powershell
-npm test
-npm run build
-curl.exe -i http://localhost:3001/health
-curl.exe -i http://localhost:3001/api/me
-```
-
-Health must return 200 with `database: connected`; an anonymous profile request must return 401. Open the client, select **Continue with Microsoft**, complete a tenant sign-in, and confirm the welcome message. Sign out and confirm the sign-in button returns. Automated authentication tests use a mocked identity provider and do not replace this live sign-in gate.
-
-For production, serve both services through HTTPS, set `NODE_ENV=production`, configure HTTPS origin/redirect values and the Entra registered redirect URI, and place the API behind one trusted reverse proxy. Cookies are HTTP-only, same-site lax and secure in production; sessions persist in PostgreSQL. The two services should be deployed on the same site so browser same-site cookie rules work. Logout ends the local TaleSafe session.
-
-## Story registration API (Milestone 2)
-
-Configure `AZURE_STORAGE_CONNECTION_STRING` and `AZURE_STORAGE_CONTAINER` in `server/.env` using an existing **private** Azure container, then restart the API. Missing storage configuration disables uploads with 503 while sign-in remains available. Public containers are rejected.
-
-`POST /api/stories` requires an authenticated session and multipart form data:
-
-| Field | Required value |
+| Page | Purpose |
 | --- | --- |
-| `file` | One nonempty UTF-8 `.txt` or PDF file, at most 10 MiB |
-| `title` | 1–200 characters |
-| `aiConsent` | `NOT_ALLOWED`, `ALLOWED`, or `COMPENSATION_REQUIRED` |
-| `commercialUse` | `true` or `false` |
-| `culturalHeritage` | `true` or `false` |
+| `/` | Sign-in and the authenticated creator workspace |
+| `/catalog` | Public, creator-authorized metadata listings |
+| `/licensing` | Licensee profiles, term-sheet drafts and community applications |
 
-The API fingerprints the original bytes before sending them to Azure. A 201 response contains the persisted story record, including `id`, `createdAt`, `sha256` and consent/permission selections. Ownership comes from the authenticated session. No public blob URLs or storage credentials are returned. A database failure after upload triggers blob cleanup. Upload concurrency is bounded to four requests per API process.
+The workspace pages share navigation, typography, responsive spacing and form styling.
 
-Live acceptance requires a private curl cookie jar from a real Entra-authenticated session. Keep it under the ignored `.verification/` directory. Then run:
+## API overview
 
-```powershell
-npm run verify:registration --workspace server -- ../.verification/creator-cookies.txt
-```
+| Endpoint | Purpose |
+| --- | --- |
+| `GET /health` | Database connectivity |
+| `GET /api/me` | Signed-in profile |
+| `POST /api/stories` | Authenticated multipart story registration |
+| `GET /api/stories` | Owner-scoped, paginated story metadata |
+| `PATCH /api/stories/:id/publication` | Owner-controlled catalog visibility |
+| `GET /api/catalog` | Published metadata only |
+| `GET /api/activity` | Recent registrations and relevant enquiries |
+| `GET /api/stories/:id/permissions` | Permissions for an accessible story |
+| `GET` and `PUT /api/licensee-profile` | Private verification-profile details |
+| `GET` and `POST /api/license-drafts` | Private, structured proposals |
+| `POST /api/license-drafts/:id/submit` | Binding-submission gates; unavailable until required integrations are configured |
+| `POST /api/license-drafts/:id/signing-preview` | Unsigned development preview, unavailable in production mode |
+| `GET` and `POST /api/community-applications` | Unverified community applications |
 
-The verifier invokes curl with `server/fixtures/sample-story.txt`, requires HTTP 201, checks the database record and downloads the stored Azure blob to compare its exact bytes, SHA-256 metadata and private-container configuration. It leaves the acceptance sample registered for dashboard verification. The verifier never creates an authentication bypass or prints cookie values.
+Story registration uses multipart fields `file`, `title`, `aiConsent`, `commercialUse` and `culturalHeritage`. AI consent is `NOT_ALLOWED`, `ALLOWED` or `COMPENSATION_REQUIRED`; permission flags are the strings `true` or `false`.
 
-The verifier also accepts a file containing browser-copied request headers from an authenticated `http://localhost:3001/api/me` request. Save these privately to `.verification/browser-request-headers.txt` and supply that path instead. It forwards only the `talesafe.sid` cookie to the local API through curl's stdin, never command arguments. Do not paste cookies into chat or reconstruct them from database session records.
+Story and catalog pagination accept `limit` from 1 to 50 and a nonnegative `offset`. Activity accepts a bounded `limit`. Authenticated browser writes enforce the configured origin, and ownership comes from the session.
 
-## Creator dashboard (Milestone 3)
-
-After sign-in, the home page becomes the creator workspace. Register stories with explicit permissions, inspect original timestamps and SHA-256 fingerprints, and see AI consent and the latest mock licensing request. Story activity shows real recorded events; Revenue explicitly reports that payments are not connected.
-
-`GET /api/stories?limit=20&offset=0` returns `{ stories, total, hasMore }` for the signed-in creator only. Limit is 1–50; offset is a nonnegative integer. Unknown parameters are rejected. Story cards include the latest related license request; no private file URLs are exposed.
-
-`GET /api/activity?limit=10` returns `{ events, hasMore }` with the most recent registrations and licensing enquiries, merged in time order. Limit is 1–50. Registration events are restricted to the creator; request events are visible only to the story owner or the requester. These are internal platform events, not evidence of external copying or AI training.
-
-## Smart licensing (Milestone 4)
-
-Select a registered story and an Educational, Film or AI company tier, then submit a mock request. Its pending status appears on the story card and persists after refresh. Educational covers noncommercial enquiries; Film requires commercial permission; AI company requests are rejected when AI training is not allowed. Compensation-required requests remain pending. Requests grant no rights and process no payments.
-
-- `POST /api/stories/:storyId/licenses`: authenticated JSON `{ "tier": "EDUCATIONAL" }`, `FILM` or `AI_COMPANY`. Returns 201 with a `REQUESTED` record; repeated pending requests return 200 with the same record. The requester comes from the session. Invalid payloads return 400; unavailable stories 404; prohibited usage 409. Browser writes require the configured origin.
-- `GET /api/stories/:storyId/permissions`: authenticated query of AI consent, commercial use and cultural heritage for a known story ID. No file URL or creator contact data is returned.
-
-The normalized `License` relation holds each story's request status. To verify an Educational request after submitting through the UI:
-
-```powershell
-npm run verify:license --workspace server -- <story-id>
-```
-
-This command reads PostgreSQL and requires an Educational `REQUESTED` record. Licensing transactions lock the story row to serialize permission checks and duplicate-request detection; a bounded 30-second timeout accommodates the remote database.
-
-## Verification and development
+## Checks
 
 ```powershell
 npm test
@@ -151,12 +137,28 @@ npm run db:validate
 npm run db:check
 ```
 
-Unit tests use isolated identity, database and storage dependencies. Live acceptance checks require the real services and a browser-authenticated cookie supplied by the user. The registration verifier creates a sample story; the license verifier only reads an existing request.
+Unit tests isolate external services. Live checks require real service configuration and an authenticated browser session supplied by the user:
 
-Never commit `.env` files, storage keys, browser cookies, the local secrets text file, `.verification/`, build outputs or `node_modules/`. Example environment files contain placeholders only. Use your deployment platform's secret storage when hosting the application.
+```powershell
+npm run verify:registration --workspace server -- <private-browser-cookie-file>
+npm run verify:foundations --workspace server -- <acceptance-story-id>
+```
 
-## Replacing the remaining demo behavior
+The registration verifier creates an acceptance sample and checks the persisted record against the Azure blob's bytes and hash. The foundation verifier reads the specified structured acceptance draft. Cookie files may use a Netscape jar, a copied Cookie header or its raw named-cookie value; keep them private under the ignored `.verification/` directory. Never reconstruct cookies from database sessions or paste them into chat.
 
-The follow-on audit and implementation sequence is recorded in [the plan](docs/plan.md). Replacements should use real stored events and verified integrations. Usage detection needs an agreed monitoring source; payments need a provider, currency and payout requirements; granting licenses needs defined creator approvals and terms. Renaming demo data does not make those integrations live.
+## Configuration safety
 
-The user-supplied [licensing framework](docs/licensing-framework.md) defines the next phase: verified licensees, structured term sheets, community authority, signed contracts and payment-gated delivery. These requirements are not yet implemented as binding transactions. Payfast-ready billing and opt-in Copyscape/SerpApi monitoring are planned; external credentials, approved contracts and verification/signing arrangements must be supplied before their dependent actions can go live.
+Never commit environment files, storage keys, browser cookies, identity documents, the local secrets file, `.verification/`, generated outputs or dependencies. Example environment files contain placeholders only. Use a secret store when hosting the application.
+
+Hosted authentication requires HTTPS and matching origins/registered redirects. Session cookies are HTTP-only, same-site lax and secure in production mode. Deploy the client and API on the same site and configure the trusted reverse proxy appropriately.
+
+## Documentation
+
+- [Product overview snapshot](docs/TaleSafe%20Africa%20Overview%20Updated.docx)
+- [Licensing and community framework](docs/licensing-framework.md)
+- [Provider integration research](docs/provider-research.md)
+- [Mock behavior audit](docs/mock-audit.md)
+- [Implementation plan](docs/plan.md)
+- [Verification record and durable project memory](docs/documentation.md)
+
+The overview document describes the MVP snapshot. See the licensing framework for verification, community authority and contract requirements.

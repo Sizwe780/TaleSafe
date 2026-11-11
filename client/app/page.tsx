@@ -31,7 +31,7 @@ export default function Home() {
   return <main className="mx-auto flex min-h-screen max-w-7xl flex-col px-6 py-8 md:px-16">
     <header className="flex items-center justify-between border-b border-green-950/15 pb-6">
       <a href="/" className="text-xl font-bold tracking-tight">TaleSafe <span className="font-normal text-green-950/60">Africa</span></a>
-      <span className="text-xs uppercase tracking-[0.2em]">Our stories. Our rights.</span>
+      <a href="/catalog" className="text-sm underline underline-offset-4">Browse the story catalog</a>
     </header>
     <section className="grid flex-1 items-center gap-12 py-20 md:grid-cols-[1.3fr_1fr]">
       <div><p className="mb-6 text-xs font-semibold uppercase tracking-[0.25em] text-[#ad5b28]">A home for African storytellers</p>

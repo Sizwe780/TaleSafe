@@ -10,6 +10,7 @@
     "db:check": "node scripts/check-database.js",
     "verify:registration": "node scripts/verify-registration.js",
     "verify:license": "node scripts/verify-license.js",
+    "verify:foundations": "node scripts/verify-foundations.js",
     "db:validate": "prisma validate",
     "db:migrate": "prisma migrate deploy"
   },
