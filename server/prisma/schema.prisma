@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+  engineType = "client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AiConsent {
+  NOT_ALLOWED
+  ALLOWED
+  COMPENSATION_REQUIRED
+}
+
+enum LicenseTier {
+  EDUCATIONAL
+  FILM
+  AI_COMPANY
+}
+
+enum LicenseStatus {
+  REQUESTED
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id          String    @id @default(uuid())
+  entraId     String    @unique
+  displayName String
+  email       String?
+  createdAt   DateTime  @default(now())
+  stories     Story[]
+  licenses    License[]
+}
+
+model Story {
+  id              String    @id @default(uuid())
+  ownerId         String
+  owner           User      @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  title           String
+  originalName    String
+  contentType     String
+  byteSize        Int
+  sha256          String    @db.Char(64)
+  blobName        String    @unique
+  commercialUse   Boolean   @default(false)
+  aiConsent       AiConsent @default(NOT_ALLOWED)
+  culturalHeritage Boolean  @default(false)
+  createdAt       DateTime  @default(now())
+  licenses        License[]
+
+  @@index([ownerId, createdAt])
+  @@index([sha256])
+}
+
+model License {
+  id          String        @id @default(uuid())
+  storyId     String
+  story       Story         @relation(fields: [storyId], references: [id], onDelete: Restrict)
+  requesterId String
+  requester   User          @relation(fields: [requesterId], references: [id], onDelete: Restrict)
+  tier        LicenseTier
+  status      LicenseStatus @default(REQUESTED)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([storyId, status])
+  @@index([requesterId])
+}

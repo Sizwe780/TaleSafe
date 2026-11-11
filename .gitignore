@@ -1,0 +1,12 @@
+node_modules/
+.next/
+.env
+.env.*
+!.env.example
+coverage/
+*.log
+*.tsbuildinfo
+env secrets for new env.txt
+.verification/
+~$*
+*.tmp

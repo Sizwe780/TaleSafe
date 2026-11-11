@@ -1,0 +1,16 @@
+{
+  "name": "talesafe-africa",
+  "private": true,
+  "workspaces": ["client", "server"],
+  "scripts": {
+    "dev:client": "npm run dev --workspace client",
+    "dev:server": "npm run dev --workspace server",
+    "build": "npm run build --workspace client",
+    "test": "npm test --workspace server",
+    "db:generate": "npm run db:generate --workspace server",
+    "db:validate": "npm run db:validate --workspace server",
+    "db:check": "npm run db:check --workspace server",
+    "db:migrate": "npm run db:migrate --workspace server"
+  },
+  "engines": { "node": ">=22.12" }
+}
